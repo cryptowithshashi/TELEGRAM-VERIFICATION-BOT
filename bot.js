@@ -36,17 +36,24 @@ function isNewAccount(userId) {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  const intro = `👋 Yo! Welcome to *CWS Bot* — your ultimate Telegram guard dog 🐺
+  const intro = `👋 *Yo! Welcome to CWS Bot* — your ultimate Telegram guard dog 🐺✨
 
-This bot keeps your group clean by auto-verifying new members, blocking suspicious bots, deleting scam links, and roasting them out in CWS style 😤
+🛡️ This bot is designed to protect your Telegram group from spam, scam links, bot raids, and fake accounts — *without mercy*. From suspicious usernames to shady links, CWS Bot kicks out all the trash before they even breathe. 😤
 
-🔗 Useful Links:
-🌐 GitHub Source: [Click Here](https://github.com/cryptowithshashi/TELEGRAM-VERIFICATION-BOT)
-🧠 Join our TG Group: [Click Here](https://t.me/crypto_with_shashi)
+✅ Every new member is verified through a strict process — if they don’t follow the rules, they’re kicked out automatically. Media? 🚫 Blocked. Links? ❌ Blocked. New accounts? 👶 Get outta here.
 
-🛠 Want to deploy this bot for your group? DM me at @Shashi7723
+⚙️ Fully customizable, no fluff, no mercy — just clean, secure group vibes. Powered by *Node.js* and pure CWS energy 🔥
 
-🚀 Built with love by *@cryptowithshashi* 💻`;
+---
+
+🔗 *Useful Links*:
+
+🌐 GitHub Source: [Click Here](https://github.com/cryptowithshashi/TELEGRAM-VERIFICATION-BOT)  
+🧠 Join our TG Community: [Click Here](https://t.me/crypto_with_shashi)
+
+💬 *Want this bot in your own group?* Just DM @Shashi7723
+
+🚀 Built with love, rage, and code by *@crypto_with_shashi* 💻❤️‍🔥`;
 
   bot.sendMessage(chatId, intro, {
     parse_mode: 'Markdown'
