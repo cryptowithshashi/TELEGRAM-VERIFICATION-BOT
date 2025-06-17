@@ -89,6 +89,15 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install git nodejs npm -y
 ```
 
+🧱 Install Dependencies (First Time Only)
+
+```bash
+npm init -y
+npm install node-telegram-bot-api
+npm install dotenv
+```
+
+
 📥 Clone the GitHub Repo
 
 ```bash
