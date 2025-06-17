@@ -125,3 +125,4 @@ bot.on('message', async (msg) => {
     joinTimestamps.delete(userId);
   }
 });
+console.log("🚀 CWS BOT is running and watching for new users...");
