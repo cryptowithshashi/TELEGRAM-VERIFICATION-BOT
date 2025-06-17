@@ -36,6 +36,9 @@ function isNewAccount(userId) {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
+  console.log("✅ /start command triggered!");
+  console.log(msg);
+
   const intro = `👋 Yo! Welcome to *CWS Bot* — your ultimate Telegram guard dog 🐺\n\nThis bot keeps your group clean by auto-verifying new members, blocking suspicious bots, deleting scam links, and roasting them out in CWS style 😤\n\n🚀 Built with love by @cryptowithshashi 💻\n\n🔽 Check out the links below to deploy your own or see the source!`;
 
   bot.sendMessage(chatId, intro, {
