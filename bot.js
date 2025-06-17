@@ -7,7 +7,9 @@ const verificationPhrase = "let's gooo cws family";
 const pendingVerifications = new Map();
 const joinTimestamps = new Map();
 
-// === Utility Function ===
+console.log("🚀 CWS BOT is running and watching for new users...");
+
+// === Utility Functions ===
 function isSuspiciousName(user) {
   const name = `${user.username || ''} ${user.first_name || ''} ${user.last_name || ''}`.toLowerCase();
   return name.includes('bot') || name.includes('spin') || name.includes('bonus');
@@ -30,34 +32,54 @@ function isNewAccount(userId) {
   return accountAgeInSeconds < 86400; // less than 1 day
 }
 
+// === Start Command Handler ===
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+
+  const intro = `👋 Yo! Welcome to *CWS Bot* — your ultimate Telegram guard dog 🐺\n\nThis bot keeps your group clean by auto-verifying new members, blocking suspicious bots, deleting scam links, and roasting them out in CWS style 😤\n\n🚀 Built with love by @cryptowithshashi 💻\n\n🔽 Check out the links below to deploy your own or see the source!`;
+
+  bot.sendMessage(chatId, intro, {
+    parse_mode: 'Markdown',
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "🌐 GitHub Source", url: "https://github.com/cryptowithshashi/TELEGRAM-VERIFICATION-BOT" }
+        ],
+        [
+          { text: "💼 Deploy This Bot", url: "mailto:cryptowithshashi@gmail.com?subject=CWS Bot Deployment" }
+        ],
+        [
+          { text: "🧠 Join Our TG Group", url: "https://t.me/crypto_with_shashi" }
+        ]
+      ]
+    }
+  });
+});
+
 // === Restrict New Members ===
 bot.on('new_chat_members', async (msg) => {
   const chatId = msg.chat.id;
   for (const user of msg.new_chat_members) {
     const userId = user.id;
 
-    // Kick if no username
     if (!user.username) {
       await bot.kickChatMember(chatId, userId);
       await bot.sendMessage(chatId, `🚫 Get out of here MF You don't have username: ID ${userId}`);
       continue;
     }
 
-    // Kick if name is suspicious
     if (isSuspiciousName(user)) {
       await bot.kickChatMember(chatId, userId);
       await bot.sendMessage(chatId, `🚫 You are very suspicious dude get the hell out of here: @${user.username}`);
       continue;
     }
 
-    // Kick if account is too new
     if (isNewAccount(userId)) {
       await bot.kickChatMember(chatId, userId);
       await bot.sendMessage(chatId, `🚫 What does new account doing here get the fuck out of here.`);
       continue;
     }
 
-    // Restrict messages
     await bot.restrictChatMember(chatId, userId, {
       can_send_messages: true,
       can_send_media_messages: false,
@@ -65,7 +87,6 @@ bot.on('new_chat_members', async (msg) => {
       can_add_web_page_previews: false,
     });
 
-    // Set verification timeout (5 mins)
     pendingVerifications.set(userId, chatId);
     joinTimestamps.set(userId, Date.now());
 
@@ -75,9 +96,8 @@ bot.on('new_chat_members', async (msg) => {
         bot.sendMessage(chatId, `⏰ @${user.username} You MF you can't even type this one line in 5 min.`);
         pendingVerifications.delete(userId);
       }
-    }, 300000); // 5 minutes
+    }, 300000);
 
-    // Send welcome message
     await bot.sendMessage(chatId, `👋 Yo @${user.username}!
 
 I *know* you're human bro 😎... but to keep the scammy MFs away, you gotta REPLY to this message with:
@@ -95,7 +115,6 @@ bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
 
-  // Block if verified user sends scam message
   if (containsLinkOrButton(msg) && pendingVerifications.has(userId)) {
     await bot.kickChatMember(chatId, userId);
     await bot.sendMessage(chatId, `🚫 Do you think you can send scam message here MF?.`);
@@ -108,7 +127,6 @@ bot.on('message', async (msg) => {
     return;
   }
 
-  // Handle verification phrase
   if (msg.text && msg.text.toLowerCase().includes(verificationPhrase)) {
     if (!pendingVerifications.has(userId)) return;
 
@@ -125,4 +143,3 @@ bot.on('message', async (msg) => {
     joinTimestamps.delete(userId);
   }
 });
-console.log("🚀 CWS BOT is running and watching for new users...");
