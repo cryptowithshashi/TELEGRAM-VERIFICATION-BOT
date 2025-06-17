@@ -36,28 +36,23 @@ function isNewAccount(userId) {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
 
-  console.log("✅ /start command triggered!");
-  console.log(msg);
+  const intro = `👋 Yo! Welcome to *CWS Bot* — your ultimate Telegram guard dog 🐺
 
-  const intro = `👋 Yo! Welcome to *CWS Bot* — your ultimate Telegram guard dog 🐺\n\nThis bot keeps your group clean by auto-verifying new members, blocking suspicious bots, deleting scam links, and roasting them out in CWS style 😤\n\n🚀 Built with love by @cryptowithshashi 💻\n\n🔽 Check out the links below to deploy your own or see the source!`;
+This bot keeps your group clean by auto-verifying new members, blocking suspicious bots, deleting scam links, and roasting them out in CWS style 😤
+
+🔗 Useful Links:
+🌐 GitHub Source: [Click Here](https://github.com/cryptowithshashi/TELEGRAM-VERIFICATION-BOT)
+🧠 Join our TG Group: [Click Here](https://t.me/crypto_with_shashi)
+
+🛠 Want to deploy this bot for your group? DM me at @Shashi7723
+
+🚀 Built with love by *@cryptowithshashi* 💻`;
 
   bot.sendMessage(chatId, intro, {
-    parse_mode: 'Markdown',
-    reply_markup: {
-      inline_keyboard: [
-        [
-          { text: "🌐 GitHub Source", url: "https://github.com/cryptowithshashi/TELEGRAM-VERIFICATION-BOT" }
-        ],
-        [
-          { text: "💼 Deploy This Bot", url: "mailto:cryptowithshashi@gmail.com?subject=CWS Bot Deployment" }
-        ],
-        [
-          { text: "🧠 Join Our TG Group", url: "https://t.me/crypto_with_shashi" }
-        ]
-      ]
-    }
+    parse_mode: 'Markdown'
   });
 });
+
 
 // === Restrict New Members ===
 bot.on('new_chat_members', async (msg) => {
