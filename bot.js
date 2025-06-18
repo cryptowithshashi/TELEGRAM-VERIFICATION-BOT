@@ -29,7 +29,18 @@ function isNewAccount(userId) {
   const accountCreated = userId >> 32;
   const now = Math.floor(Date.now() / 1000);
   const accountAgeInSeconds = now - accountCreated;
-  return accountAgeInSeconds < 86400; // less than 1 day
+  return accountAgeInSeconds < 86400;
+}
+
+async function kickUser(chatId, userId, reasonMsg) {
+  try {
+    await bot.banChatMember(chatId, userId);
+    await bot.unbanChatMember(chatId, userId);
+    await bot.sendMessage(chatId, reasonMsg);
+    console.log(`✅ Kicked user ${userId} from chat ${chatId}`);
+  } catch (err) {
+    console.error(`❌ Failed to kick user ${userId}:`, err);
+  }
 }
 
 // === Start Command Handler ===
@@ -60,28 +71,25 @@ bot.onText(/\/start/, (msg) => {
   });
 });
 
-
 // === Restrict New Members ===
 bot.on('new_chat_members', async (msg) => {
   const chatId = msg.chat.id;
+
   for (const user of msg.new_chat_members) {
     const userId = user.id;
 
     if (!user.username) {
-      await bot.kickChatMember(chatId, userId);
-      await bot.sendMessage(chatId, `🚫 Get out of here MF You don't have username: ID ${userId}`);
+      await kickUser(chatId, userId, `🚫 Get out of here MF You don't have username: ID ${userId}`);
       continue;
     }
 
     if (isSuspiciousName(user)) {
-      await bot.kickChatMember(chatId, userId);
-      await bot.sendMessage(chatId, `🚫 You are very suspicious dude get the hell out of here: @${user.username}`);
+      await kickUser(chatId, userId, `🚫 You are very suspicious dude get the hell out of here: @${user.username}`);
       continue;
     }
 
     if (isNewAccount(userId)) {
-      await bot.kickChatMember(chatId, userId);
-      await bot.sendMessage(chatId, `🚫 What does new account doing here get the fuck out of here.`);
+      await kickUser(chatId, userId, `🚫 What does new account doing here get the fuck out of here.`);
       continue;
     }
 
@@ -95,13 +103,12 @@ bot.on('new_chat_members', async (msg) => {
     pendingVerifications.set(userId, chatId);
     joinTimestamps.set(userId, Date.now());
 
-    setTimeout(() => {
+    setTimeout(async () => {
       if (pendingVerifications.has(userId)) {
-        bot.kickChatMember(chatId, userId);
-        bot.sendMessage(chatId, `⏰ @${user.username} You MF you can't even type this one line in 5 min.`);
+        await kickUser(chatId, userId, `⏰ @${user.username} You MF you can't even type this one line in 5 min.`);
         pendingVerifications.delete(userId);
       }
-    }, 300000);
+    }, 300000); // 5 mins
 
     await bot.sendMessage(chatId, `👋 Yo @${user.username}!
 
@@ -121,14 +128,12 @@ bot.on('message', async (msg) => {
   const userId = msg.from.id;
 
   if (containsLinkOrButton(msg) && pendingVerifications.has(userId)) {
-    await bot.kickChatMember(chatId, userId);
-    await bot.sendMessage(chatId, `🚫 Do you think you can send scam message here MF?.`);
+    await kickUser(chatId, userId, `🚫 Do you think you can send scam message here MF?.`);
     return;
   }
 
   if (isMediaMessage(msg) && pendingVerifications.has(userId)) {
-    await bot.kickChatMember(chatId, userId);
-    await bot.sendMessage(chatId, `🚫 You can't even verify yourself MF and you are sending photos.`);
+    await kickUser(chatId, userId, `🚫 You can't even verify yourself MF and you are sending photos.`);
     return;
   }
 
